@@ -1,0 +1,43 @@
+[gd_scene load_steps=4 format=3 uid="uid://dd5butl228ei2"]
+
+[ext_resource type="Script" path="res://Scripts/Managers/SceneManager.cs" id="1_8mktw"]
+[ext_resource type="Theme" uid="uid://80p7qgvco2ld" path="res://Prefabs/Themes/DefaultWithDyslexia.tres" id="2_iem8x"]
+[ext_resource type="LabelSettings" uid="uid://c8bnr7pwv1oxn" path="res://Prefabs/Label Settings/Main Menu Text.tres" id="2_jxy44"]
+
+[node name="SceneManager" type="Control"]
+z_index = 4096
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_8mktw")
+
+[node name="We\'ll be right back" type="Panel" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("2_iem8x")
+
+[node name="Label" type="Label" parent="We\'ll be right back"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -256.0
+offset_top = -92.0
+offset_right = 256.0
+offset_bottom = 36.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Loading Please Wait However Fucking Long Until I'm Done."
+label_settings = ExtResource("2_jxy44")
+horizontal_alignment = 1
+autowrap_mode = 3

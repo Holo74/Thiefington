@@ -1,0 +1,21 @@
+[gd_resource type="Theme" load_steps=3 format=3 uid="uid://80p7qgvco2ld"]
+
+[ext_resource type="FontFile" uid="uid://vahop51nlfa7" path="res://Fonts/Open Dyslexia/OpenDyslexic-Regular.otf" id="1_5irrk"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_615yf"]
+bg_color = Color(0.133196, 0.133196, 0.133196, 1)
+border_width_left = 20
+border_width_top = 20
+border_width_right = 20
+border_width_bottom = 20
+border_color = Color(0.907942, 0.907942, 0.907942, 1)
+border_blend = true
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+corner_detail = 3
+
+[resource]
+default_font = ExtResource("1_5irrk")
+Panel/styles/panel = SubResource("StyleBoxFlat_615yf")

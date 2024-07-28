@@ -1,0 +1,79 @@
+[gd_scene load_steps=9 format=3 uid="uid://p7eg0qiajtdt"]
+
+[ext_resource type="Script" path="res://Scripts/Player/Player.cs" id="1_ldhrt"]
+[ext_resource type="Script" path="res://Scripts/VariableGroupings/RotationAndClamp.cs" id="2_kkm7t"]
+
+[sub_resource type="Resource" id="Resource_qjqmx"]
+script = ExtResource("2_kkm7t")
+RotationLockOn = false
+Sensitivity = 20.0
+MaxRotation = 0.0
+MinRotation = 0.0
+
+[sub_resource type="Resource" id="Resource_4a3ey"]
+script = ExtResource("2_kkm7t")
+RotationLockOn = true
+Sensitivity = 20.0
+MaxRotation = 70.0
+MinRotation = -70.0
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_yudsb"]
+height = 0.25
+radius = 0.25
+
+[sub_resource type="SphereMesh" id="SphereMesh_tyic6"]
+radius = 0.1
+height = 0.2
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_pqavf"]
+
+[sub_resource type="SeparationRayShape3D" id="SeparationRayShape3D_5w7u6"]
+length = 1.75
+
+[node name="Player Character" type="CharacterBody3D" node_paths=PackedStringArray("PlayerHead")]
+script = ExtResource("1_ldhrt")
+PlayerHead = NodePath("Leaning Camera/Camera")
+YRotation = SubResource("Resource_qjqmx")
+ZRotation = SubResource("Resource_4a3ey")
+GravityValue = 10.0
+JumpStrength = 10.0
+
+[node name="Body" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.875, 0)
+shape = SubResource("CylinderShape3D_yudsb")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Body"]
+mesh = SubResource("SphereMesh_tyic6")
+
+[node name="Hand Holding Raycasts" type="Node3D" parent="."]
+transform = Transform3D(-4.37113e-08, 0, -0.999999, 0, 1, 0, 0.999999, 0, -4.37113e-08, 0, 0.644655, 0)
+
+[node name="Right Cast" type="RayCast3D" parent="Hand Holding Raycasts"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3, 0, -0.4)
+target_position = Vector3(0, -0.5, 0)
+
+[node name="Middle Cast" type="RayCast3D" parent="Hand Holding Raycasts"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.4)
+target_position = Vector3(0, -0.5, 0)
+
+[node name="Left Cast" type="RayCast3D" parent="Hand Holding Raycasts"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3, 0, -0.4)
+target_position = Vector3(0, -0.5, 0)
+
+[node name="Leaning Camera" type="SpringArm3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.644655, 0)
+shape = SubResource("BoxShape3D_pqavf")
+spring_length = 0.0
+
+[node name="Camera" type="Camera3D" parent="Leaning Camera"]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, 0, 0)
+current = true
+
+[node name="Hand Hold Loc And Rot" type="RemoteTransform3D" parent="Leaning Camera"]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, 0, 0)
+remote_path = NodePath("../../Hand Holding Raycasts")
+update_scale = false
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0.723875, 0)
+shape = SubResource("SeparationRayShape3D_5w7u6")

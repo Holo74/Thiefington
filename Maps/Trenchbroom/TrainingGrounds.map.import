@@ -1,0 +1,14 @@
+[remap]
+
+importer="qodot.map"
+type="Resource"
+uid="uid://7mn3ico87ewj"
+path="res://.godot/imported/TrainingGrounds.map-51077dedca24c4236b61b28670d719bc.tres"
+
+[deps]
+
+source_file="res://Maps/Trenchbroom/TrainingGrounds.map"
+dest_files=["res://.godot/imported/TrainingGrounds.map-51077dedca24c4236b61b28670d719bc.tres"]
+
+[params]
+

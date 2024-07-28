@@ -1,0 +1,259 @@
+[gd_scene load_steps=2 format=3 uid="uid://cphmo2y6u13xc"]
+
+[ext_resource type="LabelSettings" uid="uid://c8bnr7pwv1oxn" path="res://Prefabs/Label Settings/Main Menu Text.tres" id="1_7lt85"]
+
+[node name="Title Screen" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Backup Background" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Main Menu" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Background" type="Panel" parent="Main Menu"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Title Card" type="Label" parent="Main Menu"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -264.0
+offset_top = 80.0
+offset_right = 262.0
+offset_bottom = 254.0
+grow_horizontal = 2
+text = "Fuck the menu!!!  JK This is actually the title for the main menu"
+label_settings = ExtResource("1_7lt85")
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="Menu Options" type="VBoxContainer" parent="Main Menu"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -184.0
+offset_top = -296.0
+offset_right = 184.0
+offset_bottom = -96.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="New Game" type="Button" parent="Main Menu/Menu Options"]
+layout_mode = 2
+text = "New Game"
+
+[node name="Load Game" type="Button" parent="Main Menu/Menu Options"]
+layout_mode = 2
+text = "Load Game"
+
+[node name="Settings" type="Button" parent="Main Menu/Menu Options"]
+layout_mode = 2
+text = "Settings
+"
+
+[node name="Credits" type="Button" parent="Main Menu/Menu Options"]
+layout_mode = 2
+text = "Credits"
+
+[node name="Quit" type="Button" parent="Main Menu/Menu Options"]
+layout_mode = 2
+text = "Quit"
+
+[node name="Load Game" type="Control" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 1200.0
+offset_bottom = 1200.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Background" type="Panel" parent="Load Game"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Loading game context label" type="Label" parent="Load Game"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -224.0
+offset_top = 24.0
+offset_right = 224.0
+offset_bottom = 56.0
+grow_horizontal = 2
+text = "Select save to load"
+label_settings = ExtResource("1_7lt85")
+horizontal_alignment = 1
+
+[node name="Load Panel" type="Panel" parent="Load Game"]
+self_modulate = Color(0, 0, 0, 1)
+layout_mode = 0
+anchor_left = 0.284722
+anchor_top = 0.308642
+anchor_right = 0.722222
+anchor_bottom = 0.950617
+metadata/_edit_use_anchors_ = true
+
+[node name="Load Save Game Scroll" type="ScrollContainer" parent="Load Game/Load Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+follow_focus = true
+horizontal_scroll_mode = 0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Load Game/Load Panel/Load Save Game Scroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Button" type="Button" parent="Load Game/Load Panel/Load Save Game Scroll/VBoxContainer"]
+layout_mode = 2
+text = "File name"
+
+[node name="Button2" type="Button" parent="Load Game/Load Panel/Load Save Game Scroll/VBoxContainer"]
+layout_mode = 2
+text = "File name"
+
+[node name="Button3" type="Button" parent="Load Game/Load Panel/Load Save Game Scroll/VBoxContainer"]
+layout_mode = 2
+text = "File name"
+
+[node name="Button4" type="Button" parent="Load Game/Load Panel/Load Save Game Scroll/VBoxContainer"]
+layout_mode = 2
+text = "File name"
+
+[node name="Button5" type="Button" parent="Load Game/Load Panel/Load Save Game Scroll/VBoxContainer"]
+layout_mode = 2
+text = "File name"
+
+[node name="Button6" type="Button" parent="Load Game/Load Panel/Load Save Game Scroll/VBoxContainer"]
+layout_mode = 2
+text = "File name"
+
+[node name="Button7" type="Button" parent="Load Game/Load Panel/Load Save Game Scroll/VBoxContainer"]
+layout_mode = 2
+text = "File name"
+
+[node name="Button8" type="Button" parent="Load Game/Load Panel/Load Save Game Scroll/VBoxContainer"]
+layout_mode = 2
+text = "File name"
+
+[node name="Button9" type="Button" parent="Load Game/Load Panel/Load Save Game Scroll/VBoxContainer"]
+layout_mode = 2
+text = "File name"
+
+[node name="Button10" type="Button" parent="Load Game/Load Panel/Load Save Game Scroll/VBoxContainer"]
+layout_mode = 2
+text = "File name"
+
+[node name="Button11" type="Button" parent="Load Game/Load Panel/Load Save Game Scroll/VBoxContainer"]
+layout_mode = 2
+text = "File name"
+
+[node name="Button12" type="Button" parent="Load Game/Load Panel/Load Save Game Scroll/VBoxContainer"]
+layout_mode = 2
+text = "File name"
+
+[node name="Button13" type="Button" parent="Load Game/Load Panel/Load Save Game Scroll/VBoxContainer"]
+layout_mode = 2
+text = "File name"
+
+[node name="Button14" type="Button" parent="Load Game/Load Panel/Load Save Game Scroll/VBoxContainer"]
+layout_mode = 2
+text = "File name"
+
+[node name="Button15" type="Button" parent="Load Game/Load Panel/Load Save Game Scroll/VBoxContainer"]
+layout_mode = 2
+text = "File name"
+
+[node name="Button16" type="Button" parent="Load Game/Load Panel/Load Save Game Scroll/VBoxContainer"]
+layout_mode = 2
+text = "File name"
+
+[node name="Button17" type="Button" parent="Load Game/Load Panel/Load Save Game Scroll/VBoxContainer"]
+layout_mode = 2
+text = "File name"
+
+[node name="Button18" type="Button" parent="Load Game/Load Panel/Load Save Game Scroll/VBoxContainer"]
+layout_mode = 2
+text = "File name"
+
+[node name="Button19" type="Button" parent="Load Game/Load Panel/Load Save Game Scroll/VBoxContainer"]
+layout_mode = 2
+text = "File name"
+
+[node name="Button20" type="Button" parent="Load Game/Load Panel/Load Save Game Scroll/VBoxContainer"]
+layout_mode = 2
+text = "File name"
+
+[node name="Button21" type="Button" parent="Load Game/Load Panel/Load Save Game Scroll/VBoxContainer"]
+layout_mode = 2
+text = "File name"
+
+[node name="Settings" type="Control" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 1848.0
+offset_bottom = 1848.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Background" type="Panel" parent="Settings"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Options Selector" type="TabContainer" parent="Settings"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 32.0
+offset_top = 32.0
+offset_right = -32.0
+offset_bottom = -32.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Main Settings" type="TabBar" parent="Settings/Options Selector"]
+layout_mode = 2
