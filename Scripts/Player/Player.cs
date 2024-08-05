@@ -3,6 +3,8 @@ using System;
 
 public partial class Player : CharacterBody3D
 {
+	public static Player PLAYER { get; private set; }
+
 	private Vector2 MouseRotation { get; set; }
 
 	private float CurrentVerticalVelocity { get; set; } = 0;
@@ -32,20 +34,18 @@ public partial class Player : CharacterBody3D
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
+		PLAYER = this;
+	}
+
+	public override void _ExitTree()
+	{
+		PLAYER = null;
 	}
 
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
 	public override void _Process(double delta)
 	{
-	}
 
-	private void CommandConsole()
-	{
-		if (Input.IsActionJustPressed("CommandLine"))
-		{
-			GetTree().Paused = !GetTree().Paused;
-
-		}
 	}
 
 	public override void _PhysicsProcess(double delta)

@@ -11,13 +11,14 @@ config_version=5
 [application]
 
 config/name="Thiefington"
-run/main_scene="res://Nodes/Menus/main_menu.tscn"
+run/main_scene="res://Nodes/Maps/Testing Levels/Training Grounds.tscn"
 config/features=PackedStringArray("4.2", "C#", "Forward Plus")
 config/icon="res://icon.svg"
 
 [autoload]
 
 SceneManager="*res://Nodes/Manager/SceneManager.tscn"
+DebugGetter="*res://Nodes/Debugger/DebugGetter.tscn"
 
 [dotnet]
 

@@ -92,39 +92,42 @@ target_position = Vector3(0, -0.3, 0)
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 process_mode = 3
 
-[node name="Panel" type="Panel" parent="CanvasLayer" node_paths=PackedStringArray("Output")]
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_top = 504.0
-grow_horizontal = 2
-grow_vertical = 2
+[node name="PanelContainer" type="PanelContainer" parent="CanvasLayer" node_paths=PackedStringArray("Output", "InputCommand")]
+visible = false
+offset_top = 424.0
+offset_right = 1152.0
+offset_bottom = 648.0
 script = ExtResource("3_ochm2")
-Output = NodePath("Output")
+Output = NodePath("MarginContainer/VBoxContainer/Output")
+InputCommand = NodePath("MarginContainer/VBoxContainer/Input")
 
-[node name="Input" type="LineEdit" parent="CanvasLayer/Panel"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = 16.0
-offset_top = 88.0
-offset_right = -16.0
-offset_bottom = -16.0
-grow_horizontal = 2
-grow_vertical = 2
-placeholder_text = "Command"
+[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/PanelContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
 
-[node name="Output" type="RichTextLabel" parent="CanvasLayer/Panel"]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.0138889
-anchor_top = 0.111111
-anchor_right = 0.986111
-anchor_bottom = 0.611111
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/PanelContainer/MarginContainer"]
+layout_mode = 2
+
+[node name="Output" type="RichTextLabel" parent="CanvasLayer/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
 bbcode_enabled = true
-text = "Testing"
 scroll_following = true
+threaded = true
 metadata/_edit_use_anchors_ = true
 
-[connection signal="text_submitted" from="CanvasLayer/Panel/Input" to="CanvasLayer/Panel" method="HandleCommandEnter"]
+[node name="HSeparator" type="HSeparator" parent="CanvasLayer/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Input" type="LineEdit" parent="CanvasLayer/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "Command"
+
+[node name="RichTextLabel" type="RichTextLabel" parent="CanvasLayer/PanelContainer/MarginContainer/VBoxContainer"]
+layout_mode = 2
+
+[connection signal="text_submitted" from="CanvasLayer/PanelContainer/MarginContainer/VBoxContainer/Input" to="CanvasLayer/PanelContainer" method="HandleCommandEnter"]

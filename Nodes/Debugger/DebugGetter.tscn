@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://cvxhtotfew6tc"]
+
+[ext_resource type="Script" path="res://Scripts/Debug/DebugMenuParser.cs" id="1_upvtj"]
+
+[node name="DebugGetter" type="Node"]
+script = ExtResource("1_upvtj")
