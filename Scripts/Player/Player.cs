@@ -26,6 +26,7 @@ public partial class Player : CharacterBody3D
 	private float GravityValue { get; set; }
 	[Export]
 	private float JumpStrength { get; set; }
+	private float defaultDownSpeed = -1;
 
 
 	// Called when the node enters the scene tree for the first time.
@@ -44,7 +45,7 @@ public partial class Player : CharacterBody3D
 
 		// Get Player movement stuff
 		Velocity = GetMovement(Transform);
-		Jump();
+		Velocity += Jump();
 		Velocity += Gravity((float)(GravityValue * delta), this);
 
 		MouseRotation = MouseToRotation(MouseRotation);
@@ -67,16 +68,20 @@ public partial class Player : CharacterBody3D
 	{
 		CurrentVerticalVelocity += -gravityStrength;
 		if (player.IsOnFloor() && CurrentVerticalVelocity < 0)
-			CurrentVerticalVelocity = -1;
+			CurrentVerticalVelocity = defaultDownSpeed;
 		return Vector3.Up * CurrentVerticalVelocity;
 	}
 
-	private void Jump()
+	private Vector3 Jump()
 	{
 		if (Input.IsActionJustPressed("ui_select"))
 		{
+			// Pulling the current vertical velocity because if you're falling and jump, then nothing happens at all pretty much
+			// The plus one is because the default vertical speed on the floor is negative 1
 			CurrentVerticalVelocity = JumpStrength;
+			// return (JumpStrength - defaultDownSpeed - Math.Clamp(CurrentVerticalVelocity, float.NegativeInfinity, 0)) * Vector3.Up;
 		}
+		return Vector3.Zero;
 	}
 
 	private Vector3 GetMovement(Transform3D playerTransform)

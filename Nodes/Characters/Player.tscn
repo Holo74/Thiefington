@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://p7eg0qiajtdt"]
+[gd_scene load_steps=10 format=3 uid="uid://p7eg0qiajtdt"]
 
 [ext_resource type="Script" path="res://Scripts/Player/Player.cs" id="1_ldhrt"]
 [ext_resource type="Script" path="res://Scripts/VariableGroupings/RotationAndClamp.cs" id="2_kkm7t"]
@@ -25,10 +25,15 @@ radius = 0.25
 radius = 0.1
 height = 0.2
 
+[sub_resource type="SeparationRayShape3D" id="SeparationRayShape3D_hvxdt"]
+length = 1.5
+slide_on_slope = true
+
 [sub_resource type="BoxShape3D" id="BoxShape3D_pqavf"]
 
-[sub_resource type="SeparationRayShape3D" id="SeparationRayShape3D_5w7u6"]
-length = 1.75
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_hat3n"]
+height = 0.5
+radius = 0.25
 
 [node name="Player Character" type="CharacterBody3D" node_paths=PackedStringArray("PlayerHead")]
 script = ExtResource("1_ldhrt")
@@ -38,15 +43,19 @@ ZRotation = SubResource("Resource_4a3ey")
 GravityValue = 10.0
 JumpStrength = 10.0
 
-[node name="Body" type="CollisionShape3D" parent="."]
+[node name="Head" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.875, 0)
 shape = SubResource("CylinderShape3D_yudsb")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Body"]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Head"]
 mesh = SubResource("SphereMesh_tyic6")
 
+[node name="Body" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0.725, 0)
+shape = SubResource("SeparationRayShape3D_hvxdt")
+
 [node name="Hand Holding Raycasts" type="Node3D" parent="."]
-transform = Transform3D(-4.37113e-08, 0, -0.999999, 0, 1, 0, 0.999999, 0, -4.37113e-08, 0, 0.644655, 0)
+transform = Transform3D(-4.37113e-08, 0, -0.999999, 0, 1, 0, 0.999999, 0, -4.37113e-08, 0, 0.875, 0)
 
 [node name="Right Cast" type="RayCast3D" parent="Hand Holding Raycasts"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3, 0, -0.4)
@@ -61,7 +70,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3, 0, -0.4)
 target_position = Vector3(0, -0.5, 0)
 
 [node name="Leaning Camera" type="SpringArm3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.644655, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.875, 0)
 shape = SubResource("BoxShape3D_pqavf")
 spring_length = 0.0
 
@@ -74,6 +83,7 @@ transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, 0, 
 remote_path = NodePath("../../Hand Holding Raycasts")
 update_scale = false
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0.723875, 0)
-shape = SubResource("SeparationRayShape3D_5w7u6")
+[node name="ShapeCast3D" type="ShapeCast3D" parent="."]
+transform = Transform3D(-1, 8.74228e-08, 0, -8.74228e-08, -1, 0, 0, 0, 1, 0, 0.95, 0)
+shape = SubResource("CylinderShape3D_hat3n")
+target_position = Vector3(0, -0.3, 0)
