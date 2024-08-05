@@ -39,6 +39,15 @@ public partial class Player : CharacterBody3D
 	{
 	}
 
+	private void CommandConsole()
+	{
+		if (Input.IsActionJustPressed("CommandLine"))
+		{
+			GetTree().Paused = !GetTree().Paused;
+
+		}
+	}
+
 	public override void _PhysicsProcess(double delta)
 	{
 		base._PhysicsProcess(delta);

@@ -1,7 +1,8 @@
-[gd_scene load_steps=10 format=3 uid="uid://p7eg0qiajtdt"]
+[gd_scene load_steps=11 format=3 uid="uid://p7eg0qiajtdt"]
 
 [ext_resource type="Script" path="res://Scripts/Player/Player.cs" id="1_ldhrt"]
 [ext_resource type="Script" path="res://Scripts/VariableGroupings/RotationAndClamp.cs" id="2_kkm7t"]
+[ext_resource type="Script" path="res://Scripts/Debug/DebugMenu.cs" id="3_ochm2"]
 
 [sub_resource type="Resource" id="Resource_qjqmx"]
 script = ExtResource("2_kkm7t")
@@ -87,3 +88,43 @@ update_scale = false
 transform = Transform3D(-1, 8.74228e-08, 0, -8.74228e-08, -1, 0, 0, 0, 1, 0, 0.95, 0)
 shape = SubResource("CylinderShape3D_hat3n")
 target_position = Vector3(0, -0.3, 0)
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+process_mode = 3
+
+[node name="Panel" type="Panel" parent="CanvasLayer" node_paths=PackedStringArray("Output")]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 504.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("3_ochm2")
+Output = NodePath("Output")
+
+[node name="Input" type="LineEdit" parent="CanvasLayer/Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = 88.0
+offset_right = -16.0
+offset_bottom = -16.0
+grow_horizontal = 2
+grow_vertical = 2
+placeholder_text = "Command"
+
+[node name="Output" type="RichTextLabel" parent="CanvasLayer/Panel"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.0138889
+anchor_top = 0.111111
+anchor_right = 0.986111
+anchor_bottom = 0.611111
+bbcode_enabled = true
+text = "Testing"
+scroll_following = true
+metadata/_edit_use_anchors_ = true
+
+[connection signal="text_submitted" from="CanvasLayer/Panel/Input" to="CanvasLayer/Panel" method="HandleCommandEnter"]
