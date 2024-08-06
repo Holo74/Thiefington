@@ -25,11 +25,7 @@ public partial class Player : CharacterBody3D
 	private RotationAndClamp ZRotation { get; set; }
 
 	[Export]
-	private float GravityValue { get; set; }
-	[Export]
-	private float JumpStrength { get; set; }
-	[Export]
-	private float Speed { get; set; }
+	private PlayerVariables PlayerVariables { get; set; }
 	private float defaultDownSpeed = -1;
 
 
@@ -55,9 +51,9 @@ public partial class Player : CharacterBody3D
 		base._PhysicsProcess(delta);
 
 		// Get Player movement stuff
-		Velocity = GetMovement(Transform);
+		Velocity = GetMovement(Transform) * PlayerVariables.Speed;
 		Velocity += Jump();
-		Velocity += Gravity((float)(GravityValue * delta), this);
+		Velocity += Gravity((float)(PlayerVariables.GravityValue * delta), this);
 
 		MouseRotation = MouseToRotation(MouseRotation);
 		MouseRotation = RotationMods(MouseRotation);
@@ -89,7 +85,7 @@ public partial class Player : CharacterBody3D
 		{
 			// Pulling the current vertical velocity because if you're falling and jump, then nothing happens at all pretty much
 			// The plus one is because the default vertical speed on the floor is negative 1
-			CurrentVerticalVelocity = JumpStrength;
+			CurrentVerticalVelocity = PlayerVariables.JumpStrength;
 			// return (JumpStrength - defaultDownSpeed - Math.Clamp(CurrentVerticalVelocity, float.NegativeInfinity, 0)) * Vector3.Up;
 		}
 		return Vector3.Zero;

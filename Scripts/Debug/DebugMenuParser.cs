@@ -1,5 +1,6 @@
 using Godot;
 using Godot.Collections;
+using Microsoft.VisualBasic;
 using System;
 using System.ComponentModel;
 
@@ -15,6 +16,7 @@ public partial class DebugMenuParser : Node
 	{
 		{"set" , SETTING_PROPERTY},
 		{"get_properties", GET_ALL_PROPERTIES},
+		{"get_properties_debug", GET_ALL_PROPERTIES_DEBUG},
 		{"get_property", GET_PROPERTY_VALUE}
 	};
 
@@ -37,7 +39,7 @@ public partial class DebugMenuParser : Node
 		return target.Get(args[2]).ToString();
 	}
 
-	private static string GET_ALL_PROPERTIES(string[] args)
+	private static string GET_ALL_PROPERTIES_DEBUG(string[] args)
 	{
 		string error = "";
 		if (args.Length != 2)
@@ -53,6 +55,41 @@ public partial class DebugMenuParser : Node
 		foreach (Dictionary prop in target.GetPropertyList())
 		{
 			names = names + prop["name"].ToString() + " | ";
+		}
+		return target.GetPropertyList().ToString();
+
+	}
+
+	private static string GET_ALL_PROPERTIES(string[] args)
+	{
+		string error = "";
+		if (args.Length < 2 || args.Length > 4)
+		{
+			return "Usage: get_properties [target] <property>";
+		}
+		GodotObject target = GET_TARGET(args[1], out error);
+		if (error.Length > 1)
+		{
+			return error;
+		}
+		if (args.Length == 3)
+		{
+			Variant holder = target.Get(args[2]);
+			if (holder.VariantType == Variant.Type.Nil)
+			{
+				return string.Format("Property {0} returns null", args[2]);
+			}
+
+			if (target is null)
+			{
+				return string.Format("Path {0} could not be gotten", args[2]);
+			}
+			return holder.ToString();
+		}
+		string names = "";
+		foreach (Dictionary prop in target.GetPropertyList())
+		{
+			names = names + prop["name"].ToString() + " " + ((Variant.Type)prop["type"].AsInt64()) + " | ";
 		}
 		if (error.Length > 1)
 		{
@@ -83,22 +120,23 @@ public partial class DebugMenuParser : Node
 		{
 			return string.Format("{0} does not contain property path {1}", target.Name, propertyPath);
 		}
-
+		if (propertyPath.Contains('.'))
+		{
+			GodotObject holder = target.Get(propertyPath.Substring(0, propertyPath.LastIndexOf('.'))).AsGodotObject();
+		}
 		target.Set(propertyPath, propertySet);
 
 		return string.Format("Set property: {0} to {1} on {2}", propertyPath, propertySet, target.Name);
 	}
 
-	private static bool CONTAINS_PROPERTY_NAME(string name, Node target)
+	private static bool CONTAINS_PROPERTY_NAME(string name, GodotObject target)
 	{
-		foreach (Dictionary property in target.GetPropertyList())
+		Variant v = target.Get("name");
+		if (v.VariantType == Variant.Type.Nil)
 		{
-			if (property["name"].ToString().Equals(name))
-			{
-				return true;
-			}
+			return false;
 		}
-		return false;
+		return true;
 	}
 
 	// Getting to the end would require you to just leave length alone.  I don't think we should ever reach that amount of arguments
