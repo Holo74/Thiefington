@@ -14,7 +14,7 @@ public partial class DebugMenuParser : Node
 	public static System.Collections.Generic.Dictionary<string, Func<string[], string>> PARSING = new System.Collections.Generic.Dictionary<string, Func<string[], string>>()
 	{
 		{"set" , SETTING_PROPERTY},
-		{"get_all_properties", GET_ALL_PROPERTIES},
+		{"get_properties", GET_ALL_PROPERTIES},
 		{"get_property", GET_PROPERTY_VALUE}
 	};
 
@@ -119,7 +119,7 @@ public partial class DebugMenuParser : Node
 		return arguments;
 	}
 
-	private static object CONVERT_VALUE_TO(string val)
+	private static Variant CONVERT_VALUE_TO(string val)
 	{
 		float outputF;
 		if (float.TryParse(val, out outputF))
@@ -133,10 +133,30 @@ public partial class DebugMenuParser : Node
 	{
 		if (args.Length == 1)
 		{
-			Variant single_out = (Variant)CONVERT_VALUE_TO(args[0]);
+			Variant single_out = CONVERT_VALUE_TO(args[0]);
+			return single_out;
 		}
-		Variant outputing = new Variant();
-		return outputing;
+		if (args.Length == 3)
+		{
+			float[] temp = new float[3];
+			bool isNumb = true;
+
+			for (int i = 0; i < args.Length && isNumb; i++)
+			{
+				isNumb = float.TryParse(args[i], out temp[i]);
+			}
+			if (isNumb)
+			{
+				Vector3 vec3 = new Vector3(temp[0], temp[1], temp[2]);
+				return vec3;
+			}
+		}
+		Godot.Collections.Array arr = new Godot.Collections.Array();
+		foreach (string arg in args)
+		{
+			arr.Add(CONVERT_VALUE_TO(arg));
+		}
+		return arr;
 	}
 
 	private static Node GET_TARGET(string arg, out string error)
@@ -145,7 +165,6 @@ public partial class DebugMenuParser : Node
 		GodotObject targetted;
 		if (arg.Equals("player"))
 		{
-			GD.Print(Player.PLAYER.GetInstanceId());
 			return Player.PLAYER;
 		}
 		try

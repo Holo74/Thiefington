@@ -28,6 +28,8 @@ public partial class Player : CharacterBody3D
 	private float GravityValue { get; set; }
 	[Export]
 	private float JumpStrength { get; set; }
+	[Export]
+	private float Speed { get; set; }
 	private float defaultDownSpeed = -1;
 
 
