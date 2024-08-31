@@ -13,7 +13,7 @@ public partial class PlayerVariables : Resource
 
     public override string ToString()
     {
-        return string.Format("GravityValue: {0}, JumpStrength: {1}, Speed: {2}", GravityValue, JumpStrength, Speed);
+        return string.Format("PlayerVariables");
     }
 
     public override Variant _Get(StringName property)

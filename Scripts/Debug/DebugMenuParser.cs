@@ -107,7 +107,7 @@ public partial class DebugMenuParser : Node
 			return "Usage: set [target] [property] [value]";
 		}
 		string targetErrorReport = "";
-		Node target = GET_TARGET(args[1], out targetErrorReport);
+		GodotObject target = GET_TARGET(args[1], out targetErrorReport);
 		string propertyPath = args[2];
 		Variant propertySet = CONVERT_ARGS_TO_VARIANT(GET_ARGUMENTS_ALONE(args, 3, out targetErrorReport));
 
@@ -118,15 +118,27 @@ public partial class DebugMenuParser : Node
 
 		if (!CONTAINS_PROPERTY_NAME(propertyPath, target))
 		{
-			return string.Format("{0} does not contain property path {1}", target.Name, propertyPath);
+			return string.Format("{0} does not contain property path {1}", target.ToString(), propertyPath);
 		}
-		if (propertyPath.Contains('.'))
+		// I don't think this'll work for anything deeper than 1 level
+		Variant holder = target;
+		while (propertyPath.Contains('.') && holder.VariantType == Variant.Type.Object)
 		{
-			GodotObject holder = target.Get(propertyPath.Substring(0, propertyPath.LastIndexOf('.'))).AsGodotObject();
+			string obj_current = propertyPath.Substring(0, propertyPath.IndexOf('.'));
+			holder = holder.AsGodotObject().Get(obj_current);
+			propertyPath = propertyPath.Substring(propertyPath.IndexOf('.') + 1);
+			if (!propertyPath.Contains('.') && holder.VariantType == Variant.Type.Object)
+			{
+				target = holder.AsGodotObject();
+			}
+			else
+			{
+				return string.Format("Error detected.  Um.  Idk how we got here");
+			}
 		}
 		target.Set(propertyPath, propertySet);
 
-		return string.Format("Set property: {0} to {1} on {2}", propertyPath, propertySet, target.Name);
+		return string.Format("Set property: {0} to {1} on {2}", propertyPath, propertySet, target.ToString());
 	}
 
 	private static bool CONTAINS_PROPERTY_NAME(string name, GodotObject target)
