@@ -7,7 +7,7 @@ public partial class Player : CharacterBody3D
 
 	private Vector2 MouseRotation { get; set; }
 
-	private float CurrentVerticalVelocity { get; set; } = 0;
+	private Vector3 CurrentVelocity { get; set; } = new Vector3();
 
 	[ExportGroup("Internal Variables")]
 	[ExportSubgroup("Player Nodes")]
@@ -15,9 +15,6 @@ public partial class Player : CharacterBody3D
 	public Camera3D PlayerHead { get; set; }
 
 	[ExportSubgroup("Variables")]
-	[Export(PropertyHint.Range, ".1, 4, .1")]
-	private float StandingFromGroundDistance { get; set; }
-
 	// Remember that these are in radians
 	[Export]
 	private RotationAndClamp YRotation { get; set; }
@@ -26,57 +23,21 @@ public partial class Player : CharacterBody3D
 
 	[Export]
 	private PlayerVariables PlayerVariables { get; set; }
-	private float defaultDownSpeed = -1;
+	private Vector3 defaultDownSpeed = Vector3.Down;
 
 
-	// Called when the node enters the scene tree for the first time.
-	public override void _Ready()
-	{
-		PLAYER = this;
-	}
-
-	public override void _ExitTree()
-	{
-		PLAYER = null;
-	}
-
-	// Called every frame. 'delta' is the elapsed time since the previous frame.
-	public override void _Process(double delta)
-	{
-
-	}
-
-	public override void _PhysicsProcess(double delta)
-	{
-		base._PhysicsProcess(delta);
-
-		// Get Player movement stuff
-		Velocity = GetMovement(Transform) * PlayerVariables.Speed;
-		Velocity += Jump();
-		Velocity += Gravity((float)(PlayerVariables.GravityValue * delta), this);
-
-		MouseRotation = MouseToRotation(MouseRotation);
-		MouseRotation = RotationMods(MouseRotation);
-
-		// This is for the final actions of the player stuff
-		MoveAndSlide();
-
-		PlayerHead.RotateZ(ZRotation.RotateAmount(MouseRotation.Y));
-		RotateY(YRotation.RotateAmount(MouseRotation.X));
-
-
-
-		// Resetting values that might not get reset
-		MouseRotation = Vector2.Zero;
-		Velocity = Vector3.Zero;
-	}
+	[Export]
+	private double CrouchLongPress { get; set; } = 1.0;
+	[Export]
+	private CrouchingAssister crouchingAssister { get; set; }
+	private double CrouchDuration { get; set; } = 0.0;
 
 	private Vector3 Gravity(float gravityStrength, CharacterBody3D player)
 	{
-		CurrentVerticalVelocity += -gravityStrength;
-		if (player.IsOnFloor() && CurrentVerticalVelocity < 0)
-			CurrentVerticalVelocity = defaultDownSpeed;
-		return Vector3.Up * CurrentVerticalVelocity;
+		CurrentVelocity += Vector3.Down * gravityStrength;
+		if (player.IsOnFloor() && CurrentVelocity.Y < 0)
+			CurrentVelocity = defaultDownSpeed;
+		return CurrentVelocity;
 	}
 
 	private Vector3 Jump()
@@ -85,7 +46,7 @@ public partial class Player : CharacterBody3D
 		{
 			// Pulling the current vertical velocity because if you're falling and jump, then nothing happens at all pretty much
 			// The plus one is because the default vertical speed on the floor is negative 1
-			CurrentVerticalVelocity = PlayerVariables.JumpStrength;
+			CurrentVelocity = Vector3.Up * PlayerVariables.JumpStrength;
 			// return (JumpStrength - defaultDownSpeed - Math.Clamp(CurrentVerticalVelocity, float.NegativeInfinity, 0)) * Vector3.Up;
 		}
 		return Vector3.Zero;
@@ -113,8 +74,73 @@ public partial class Player : CharacterBody3D
 
 	private Vector2 RotationMods(Vector2 rotation)
 	{
-		Vector2 finRotation = rotation;
+		Vector2 finRotation = rotation * PlayerVariables.MouseRotationMult;
 		return finRotation;
+	}
+
+
+
+
+	// Internal override functions
+
+	// Called when the node enters the scene tree for the first time.
+	public override void _Ready()
+	{
+		PLAYER = this;
+	}
+
+	public override void _ExitTree()
+	{
+		PLAYER = null;
+	}
+
+	// Called every frame. 'delta' is the elapsed time since the previous frame.
+	public override void _Process(double delta)
+	{
+
+	}
+
+	public override void _PhysicsProcess(double delta)
+	{
+		base._PhysicsProcess(delta);
+
+		// Get Player input stuff
+		Velocity = GetMovement(Transform) * PlayerVariables.Speed;
+		Velocity += Jump();
+		Velocity += Gravity((float)(PlayerVariables.GravityValue * delta), this);
+
+		if (Input.IsActionPressed("Crouch"))
+		{
+			CrouchDuration += delta;
+			if (CrouchDuration > CrouchLongPress)
+			{
+				crouchingAssister.LongPressCrouch();
+				CrouchDuration = -800.0;
+			}
+		}
+		else
+		{
+			if (CrouchDuration > 0.01 && CrouchDuration < CrouchLongPress)
+			{
+				crouchingAssister.Crouch();
+			}
+			CrouchDuration = 0;
+		}
+
+		MouseRotation = MouseToRotation(MouseRotation);
+		MouseRotation = RotationMods(MouseRotation);
+
+		// This is for the final actions of the player stuff
+		MoveAndSlide();
+
+		PlayerHead.RotateZ(ZRotation.RotateAmount(MouseRotation.Y));
+		RotateY(YRotation.RotateAmount(MouseRotation.X));
+
+
+
+		// Resetting values that might not get reset
+		MouseRotation = Vector2.Zero;
+		Velocity = Vector3.Zero;
 	}
 
 	public override void _Input(InputEvent @event)

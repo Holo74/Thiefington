@@ -1,5 +1,6 @@
 using Godot;
 using System;
+using System.Reflection;
 
 [GlobalClass]
 public partial class PlayerVariables : Resource
@@ -10,6 +11,8 @@ public partial class PlayerVariables : Resource
     public float JumpStrength { get; set; }
     [Export]
     public float Speed { get; set; }
+    [Export]
+    public Vector2 MouseRotationMult { get; set; }
 
     public override string ToString()
     {
@@ -18,6 +21,7 @@ public partial class PlayerVariables : Resource
 
     public override Variant _Get(StringName property)
     {
+        GetType().GetProperties();
         return string.Format("GravityValue: {0}, JumpStrength: {1}, Speed: {2}", GravityValue, JumpStrength, Speed);
     }
 

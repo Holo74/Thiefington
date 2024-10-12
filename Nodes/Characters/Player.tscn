@@ -1,9 +1,11 @@
-[gd_scene load_steps=13 format=3 uid="uid://p7eg0qiajtdt"]
+[gd_scene load_steps=16 format=3 uid="uid://p7eg0qiajtdt"]
 
 [ext_resource type="Script" path="res://Scripts/Player/Player.cs" id="1_ldhrt"]
 [ext_resource type="Script" path="res://Scripts/VariableGroupings/RotationAndClamp.cs" id="2_kkm7t"]
 [ext_resource type="Script" path="res://Scripts/Debug/DebugMenu.cs" id="3_ochm2"]
 [ext_resource type="Script" path="res://Scripts/Player/Resources/PlayerVariables.cs" id="3_wq6i4"]
+[ext_resource type="Script" path="res://Scripts/Player/Extension/CrouchingAssister.cs" id="4_5pjyl"]
+[ext_resource type="Script" path="res://Scripts/Player/Extension/HandHolder.cs" id="5_v66qm"]
 
 [sub_resource type="Resource" id="Resource_qjqmx"]
 script = ExtResource("2_kkm7t")
@@ -24,6 +26,7 @@ script = ExtResource("3_wq6i4")
 GravityValue = 10.0
 JumpStrength = 10.0
 Speed = 5.0
+MouseRotationMult = Vector2(0.5, 0.5)
 
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_yudsb"]
 height = 0.25
@@ -39,16 +42,32 @@ slide_on_slope = true
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_pqavf"]
 
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_im7vb"]
+height = 0.1
+radius = 0.284342
+
 [sub_resource type="CylinderShape3D" id="CylinderShape3D_hat3n"]
-height = 0.5
+height = 0.1
 radius = 0.25
 
-[node name="Player Character" type="CharacterBody3D" node_paths=PackedStringArray("PlayerHead")]
+[node name="Player Character" type="CharacterBody3D" node_paths=PackedStringArray("PlayerHead", "crouchingAssister")]
 script = ExtResource("1_ldhrt")
 PlayerHead = NodePath("Leaning Camera/Camera")
 YRotation = SubResource("Resource_qjqmx")
 ZRotation = SubResource("Resource_4a3ey")
 PlayerVariables = SubResource("Resource_1l84b")
+crouchingAssister = NodePath("Crouch Assister")
+
+[node name="Crouch Assister" type="Node" parent="." node_paths=PackedStringArray("PlayerCharacter", "HeadSpaceCast", "BodyCollision")]
+script = ExtResource("4_5pjyl")
+PlayerCharacter = NodePath("..")
+CrouchHeight = 0.5
+StandingHeight = 1.5
+ProneHeight = 0.1
+CrouchingSpeedPerUnit = 0.5
+CrouchToProneSpeed = 2.0
+HeadSpaceCast = NodePath("../Head cast")
+BodyCollision = NodePath("../Body")
 
 [node name="Head" type="CollisionShape3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.875, 0)
@@ -63,6 +82,7 @@ shape = SubResource("SeparationRayShape3D_hvxdt")
 
 [node name="Hand Holding Raycasts" type="Node3D" parent="."]
 transform = Transform3D(-4.37113e-08, 0, -0.999999, 0, 1, 0, 0.999999, 0, -4.37113e-08, 0, 0.875, 0)
+script = ExtResource("5_v66qm")
 
 [node name="Right Cast" type="RayCast3D" parent="Hand Holding Raycasts"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3, 0, -0.4)
@@ -90,8 +110,16 @@ transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, 0, 
 remote_path = NodePath("../../Hand Holding Raycasts")
 update_scale = false
 
-[node name="ShapeCast3D" type="ShapeCast3D" parent="."]
-transform = Transform3D(-1, 8.74228e-08, 0, -8.74228e-08, -1, 0, 0, 0, 1, 0, 0.95, 0)
+[node name="HeadBumper" type="Area3D" parent="Leaning Camera"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.203244, 0)
+monitorable = false
+
+[node name="Bumper" type="CollisionShape3D" parent="Leaning Camera/HeadBumper"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.00228667, 0)
+shape = SubResource("CylinderShape3D_im7vb")
+
+[node name="Head cast" type="ShapeCast3D" parent="."]
+transform = Transform3D(-1, 8.74228e-08, 0, -8.74228e-08, -1, 0, 0, 0, 1, 0, 0.75, 0)
 shape = SubResource("CylinderShape3D_hat3n")
 target_position = Vector3(0, -0.3, 0)
 
@@ -99,6 +127,7 @@ target_position = Vector3(0, -0.3, 0)
 process_mode = 3
 
 [node name="PanelContainer" type="PanelContainer" parent="CanvasLayer" node_paths=PackedStringArray("Output", "InputCommand")]
+visible = false
 anchors_preset = -1
 anchor_top = 0.654321
 anchor_right = 1.0
@@ -138,4 +167,5 @@ placeholder_text = "Command"
 [node name="RichTextLabel" type="RichTextLabel" parent="CanvasLayer/PanelContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
 
+[connection signal="FinishCrouchState" from="Crouch Assister" to="." method="DebugEventCaller"]
 [connection signal="text_submitted" from="CanvasLayer/PanelContainer/MarginContainer/VBoxContainer/Input" to="CanvasLayer/PanelContainer" method="HandleCommandEnter"]
