@@ -7,7 +7,6 @@ public partial class Player : CharacterBody3D
 
 	private Vector2 MouseRotation { get; set; }
 
-	private Vector3 CurrentVelocity { get; set; } = new Vector3();
 
 	[ExportGroup("Internal Variables")]
 	[ExportSubgroup("Player Nodes")]
@@ -23,8 +22,6 @@ public partial class Player : CharacterBody3D
 
 	[Export]
 	private PlayerVariables PlayerVariables { get; set; }
-	private Vector3 defaultDownSpeed = Vector3.Down;
-
 
 	[Export]
 	private double CrouchLongPress { get; set; } = 1.0;
@@ -32,35 +29,9 @@ public partial class Player : CharacterBody3D
 	private CrouchingAssister crouchingAssister { get; set; }
 	private double CrouchDuration { get; set; } = 0.0;
 
-	private Vector3 Gravity(float gravityStrength, CharacterBody3D player)
-	{
-		CurrentVelocity += Vector3.Down * gravityStrength;
-		if (player.IsOnFloor() && CurrentVelocity.Y < 0)
-			CurrentVelocity = defaultDownSpeed;
-		return CurrentVelocity;
-	}
+	[Export]
+	private MovementNode MovementInstructions { get; set; }
 
-	private Vector3 Jump()
-	{
-		if (Input.IsActionJustPressed("ui_select"))
-		{
-			// Pulling the current vertical velocity because if you're falling and jump, then nothing happens at all pretty much
-			// The plus one is because the default vertical speed on the floor is negative 1
-			CurrentVelocity = Vector3.Up * PlayerVariables.JumpStrength;
-			// return (JumpStrength - defaultDownSpeed - Math.Clamp(CurrentVerticalVelocity, float.NegativeInfinity, 0)) * Vector3.Up;
-		}
-		return Vector3.Zero;
-	}
-
-	private Vector3 GetMovement(Transform3D playerTransform)
-	{
-		Vector3 movement = Vector3.Zero;
-		movement += (Input.IsActionPressed("Forward") ? 1.0f : 0.0f) * playerTransform.Basis.X;
-		movement += (Input.IsActionPressed("Backward") ? 1.0f : 0.0f) * -playerTransform.Basis.X;
-		movement += (Input.IsActionPressed("Right") ? 1.0f : 0.0f) * playerTransform.Basis.Z;
-		movement += (Input.IsActionPressed("Left") ? 1.0f : 0.0f) * -playerTransform.Basis.Z;
-		return movement;
-	}
 
 	private Vector2 MouseToRotation(Vector2 MouseMovement)
 	{
@@ -97,18 +68,12 @@ public partial class Player : CharacterBody3D
 	// Called every frame. 'delta' is the elapsed time since the previous frame.
 	public override void _Process(double delta)
 	{
-
-	}
-
-	public override void _PhysicsProcess(double delta)
-	{
-		base._PhysicsProcess(delta);
-
-		// Get Player input stuff
-		Velocity = GetMovement(Transform) * PlayerVariables.Speed;
-		Velocity += Jump();
-		Velocity += Gravity((float)(PlayerVariables.GravityValue * delta), this);
-
+		if (Input.IsActionPressed("Left")) MovementInstructions.MoveDirection(MoveDirectionEnum.Left);
+		if (Input.IsActionPressed("Backward")) MovementInstructions.MoveDirection(MoveDirectionEnum.Down);
+		if (Input.IsActionPressed("Forward")) MovementInstructions.MoveDirection(MoveDirectionEnum.Forward);
+		if (Input.IsActionPressed("Right")) MovementInstructions.MoveDirection(MoveDirectionEnum.Right);
+		if (Input.IsActionPressed("Jump")) MovementInstructions.Jump();
+		MovementInstructions.Lock();
 		if (Input.IsActionPressed("Crouch"))
 		{
 			CrouchDuration += delta;
@@ -127,15 +92,25 @@ public partial class Player : CharacterBody3D
 			CrouchDuration = 0;
 		}
 
+
+	}
+
+	public override void _PhysicsProcess(double delta)
+	{
+		base._PhysicsProcess(delta);
+
+		// Get Player input stuff
+
+
 		MouseRotation = MouseToRotation(MouseRotation);
 		MouseRotation = RotationMods(MouseRotation);
 
+		Velocity = MovementInstructions.RecieveMovement() + MovementInstructions.PerservedMovement;
 		// This is for the final actions of the player stuff
 		MoveAndSlide();
 
 		PlayerHead.RotateZ(ZRotation.RotateAmount(MouseRotation.Y));
 		RotateY(YRotation.RotateAmount(MouseRotation.X));
-
 
 
 		// Resetting values that might not get reset
