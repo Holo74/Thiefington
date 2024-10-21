@@ -1,0 +1,29 @@
+// Game: Qodot
+// Format: Standard
+// entity 0
+{
+"classname" "worldspawn"
+"_tb_textures" "textures"
+}
+// entity 1
+{
+"classname" "func_group"
+"_tb_type" "_tb_layer"
+"_tb_name" "Floor"
+"_tb_id" "1"
+"_tb_layer_sort_index" "0"
+}
+// entity 2
+{
+"classname" "button"
+"_tb_layer" "1"
+// brush 0
+{
+( -48 64 16 ) ( -48 -128 16 ) ( -48 -128 -16 ) oak_planks 0 0 0 1 1
+( -48 -128 16 ) ( 80 -128 16 ) ( 80 -128 -16 ) oak_planks 0 0 0 1 1
+( 80 -128 -16 ) ( 80 64 -16 ) ( -48 64 -16 ) oak_planks 0 0 0 1 1
+( -48 64 16 ) ( 80 64 16 ) ( 80 -128 16 ) oak_planks 0 0 0 1 1
+( 80 64 -16 ) ( 80 64 16 ) ( -48 64 16 ) oak_planks 0 0 0 1 1
+( 80 -128 16 ) ( 80 64 16 ) ( 80 64 -16 ) oak_planks 0 0 0 1 1
+}
+}

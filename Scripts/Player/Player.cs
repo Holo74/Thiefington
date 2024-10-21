@@ -21,12 +21,12 @@ public partial class Player : CharacterBody3D
 	private RotationAndClamp ZRotation { get; set; }
 
 	[Export]
-	private PlayerVariables PlayerVariables { get; set; }
+	public PlayerVariables PlayerVariables { get; private set; }
 
 	[Export]
 	private double CrouchLongPress { get; set; } = 1.0;
 	[Export]
-	private CrouchingAssister crouchingAssister { get; set; }
+	public CrouchingAssister crouchingAssister { get; private set; }
 	private double CrouchDuration { get; set; } = 0.0;
 
 	[Export]
@@ -105,7 +105,7 @@ public partial class Player : CharacterBody3D
 		MouseRotation = MouseToRotation(MouseRotation);
 		MouseRotation = RotationMods(MouseRotation);
 
-		Velocity = MovementInstructions.RecieveMovement() + MovementInstructions.PerservedMovement;
+		Velocity = MovementInstructions.RecieveMovement();
 		// This is for the final actions of the player stuff
 		MoveAndSlide();
 

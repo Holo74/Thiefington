@@ -29,6 +29,7 @@ public partial class CrouchingAssister : Node
 	public delegate void FinishCrouchStateEventHandler(int currentStanding);
 
 	private Tween CurrentRunningTween { get; set; }
+	public bool DisableCrouch { get; set; }
 
 	public override void _Ready()
 	{
@@ -44,6 +45,7 @@ public partial class CrouchingAssister : Node
 			GD.Print("Head space is colliding");
 			AttemptCancelCrouch();
 		}
+
 	}
 
 	public void Setup(Enums.EStandingType standingType)
@@ -94,7 +96,7 @@ public partial class CrouchingAssister : Node
 		if (!CanCrouch())
 		{
 			// This might be needed for other things, but not right now
-			//return;
+			return;
 		}
 
 		// We needed the comparision because the bool is bool? which can't be directly used

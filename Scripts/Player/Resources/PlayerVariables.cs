@@ -10,19 +10,38 @@ public partial class PlayerVariables : Resource
     [Export]
     public float JumpStrength { get; set; }
     [Export]
-    public float Speed { get; set; }
+    public float StandingSpeed { get; set; }
+    [Export]
+    public float CrouchingSpeed { get; set; }
+    [Export]
+    public float CrawlingSpeed { get; set; }
     [Export]
     public Vector2 MouseRotationMult { get; set; }
 
     public override string ToString()
     {
-        return string.Format("PlayerVariables");
+        string outputString = "Player Variables:\n";
+        foreach (var prop in GetType().GetProperties())
+        {
+            outputString += string.Format("{0}: {1}, ", prop.Name, prop.GetValue(this));
+        }
+        GetType().GetProperties();
+        outputString = outputString.Substring(0, outputString.Length - 2);
+        GD.Print(outputString);
+        return outputString;
     }
 
     public override Variant _Get(StringName property)
     {
+        string outputString = "";
+        foreach (var prop in GetType().GetProperties())
+        {
+            outputString += string.Format("{0}: {1}, ", prop.Name, prop.GetValue(this));
+        }
         GetType().GetProperties();
-        return string.Format("GravityValue: {0}, JumpStrength: {1}, Speed: {2}", GravityValue, JumpStrength, Speed);
+        outputString = outputString.Substring(0, outputString.Length - 2);
+        GD.Print(outputString);
+        return outputString;
     }
 
     public override bool _Set(StringName property, Variant value)

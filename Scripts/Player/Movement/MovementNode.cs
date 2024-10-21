@@ -7,9 +7,10 @@ public partial class MovementNode : Node
 	private IMovement CurrentState { get; set; }
 
 	public Vector3 PerservedMovement { get; set; }
+	private Vector3 PriorMovement { get; set; }
 
 	[Export]
-	private Player PlayerCharacter { get; set; }
+	public Player PlayerCharacter { get; private set; }
 
 	private Vector3 Movement { get; set; }
 	private bool MovementLock { get; set; }
@@ -93,15 +94,16 @@ public partial class MovementNode : Node
 	{
 		MovementLock = false;
 		Vector3 returningMove = Movement;
+		PriorMovement = Movement;
 		Movement = Vector3.Zero;
-		return returningMove;
+		return returningMove + PerservedMovement;
 	}
 
 	public void Jump()
 	{
 		if (MovementLock)
 			return;
-		PerservedMovement += CurrentState.Jump(PlayerCharacter);
+		Movement += CurrentState.Jump(PlayerCharacter);
 	}
 
 	public void CrouchReceiver(int Receiver)
@@ -116,6 +118,8 @@ public partial class MovementNode : Node
 		switch (state)
 		{
 			case PlayerMovementState.Falling:
+				GD.Print(PriorMovement);
+				PerservedMovement += PriorMovement;
 				CurrentState = new FallingMovement();
 				break;
 			case PlayerMovementState.Climbing:

@@ -6,10 +6,8 @@ public class StandardMovement : IMovement
 {
 	private MovementNode ParentNode { get; set; }
 	private float CurrentSpeed { get; set; } = 10;
-	private float StandingSpeed { get; set; } = 10;
-	private float CrouchSpeed { get; set; } = 5;
-	private float CrawlingSpeed { get; set; } = 2;
-	private float JumpStrength { get; set; } = 10;
+
+
 
 	public Vector3 BackwardMove(CharacterBody3D body)
 	{
@@ -21,13 +19,13 @@ public class StandardMovement : IMovement
 		switch (crouchType)
 		{
 			case EStandingType.Standing:
-				CurrentSpeed = StandingSpeed;
+				CurrentSpeed = ParentNode.PlayerCharacter.PlayerVariables.StandingSpeed;
 				break;
 			case EStandingType.Crouching:
-				CurrentSpeed = CrouchSpeed;
+				CurrentSpeed = ParentNode.PlayerCharacter.PlayerVariables.CrouchingSpeed;
 				break;
 			case EStandingType.Prone:
-				CurrentSpeed = CrawlingSpeed;
+				CurrentSpeed = ParentNode.PlayerCharacter.PlayerVariables.CrawlingSpeed;
 				break;
 		}
 	}
@@ -41,7 +39,9 @@ public class StandardMovement : IMovement
 	{
 		parent.TouchSurface += ChangedSurface;
 		ParentNode = parent;
-		ParentNode.PerservedMovement -= ParentNode.PerservedMovement * Vector3.Up;
+		ParentNode.PerservedMovement = Vector3.Zero;
+		CrouchSignal(ParentNode.PlayerCharacter.crouchingAssister.CurrentStanding);
+		ParentNode.PlayerCharacter.crouchingAssister.DisableCrouch = false;
 	}
 
 	private void ChangedSurface(int surface, bool status)
@@ -54,7 +54,8 @@ public class StandardMovement : IMovement
 
 	public Vector3 Jump(CharacterBody3D body)
 	{
-		return Vector3.Up * JumpStrength;
+		ParentNode.PerservedMovement = Vector3.Up * ParentNode.PlayerCharacter.PlayerVariables.JumpStrength;
+		return Vector3.Zero;
 	}
 
 	public void Kill()

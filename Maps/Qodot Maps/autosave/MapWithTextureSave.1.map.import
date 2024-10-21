@@ -1,0 +1,14 @@
+[remap]
+
+importer="qodot.map"
+type="Resource"
+uid="uid://ds00ih8wnq6un"
+path="res://.godot/imported/MapWithTextureSave.1.map-995a925666476988914510769d448b3d.tres"
+
+[deps]
+
+source_file="res://Maps/Qodot Maps/autosave/MapWithTextureSave.1.map"
+dest_files=["res://.godot/imported/MapWithTextureSave.1.map-995a925666476988914510769d448b3d.tres"]
+
+[params]
+

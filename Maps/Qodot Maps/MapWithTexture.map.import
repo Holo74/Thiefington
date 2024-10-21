@@ -1,0 +1,14 @@
+[remap]
+
+importer="qodot.map"
+type="Resource"
+uid="uid://cx5ke0llk3tpy"
+path="res://.godot/imported/MapWithTexture.map-360135555f16f148cdebbfdd70ca9fd3.tres"
+
+[deps]
+
+source_file="res://Maps/Qodot Maps/MapWithTexture.map"
+dest_files=["res://.godot/imported/MapWithTexture.map-360135555f16f148cdebbfdd70ca9fd3.tres"]
+
+[params]
+

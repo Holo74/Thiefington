@@ -87,6 +87,7 @@ public partial class DebugMenuParser : Node
 			return holder.ToString();
 		}
 		string names = "";
+		GD.Print(target.ToString());
 		foreach (Dictionary prop in target.GetPropertyList())
 		{
 			names = names + prop["name"].ToString() + " " + ((Variant.Type)prop["type"].AsInt64()) + " | ";
