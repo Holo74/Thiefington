@@ -1,7 +1,7 @@
 using Godot;
 using System;
 
-public partial class HandHolder : Node
+public partial class HandHolder : Node3D
 {
 	private bool IsGrabbingHolds { get; set; } = false;
 	[Signal]

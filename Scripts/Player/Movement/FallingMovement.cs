@@ -58,6 +58,7 @@ public class FallingMovement : IMovement
 
 	public Vector3 Jump(CharacterBody3D body)
 	{
+		ParentNode.PlayerCharacter.LedgeGrabber.GrabWall();
 		return Vector3.Zero;
 	}
 

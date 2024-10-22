@@ -75,6 +75,10 @@ Jump={
 
 3d_render/layer_20="Hand meshes"
 
+[physics]
+
+3d/physics_engine="JoltPhysics3D"
+
 [rendering]
 
 occlusion_culling/use_occlusion_culling=true

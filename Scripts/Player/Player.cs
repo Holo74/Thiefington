@@ -30,6 +30,9 @@ public partial class Player : CharacterBody3D
 	private double CrouchDuration { get; set; } = 0.0;
 
 	[Export]
+	public HandHolder LedgeGrabber { get; private set; }
+
+	[Export]
 	private MovementNode MovementInstructions { get; set; }
 
 

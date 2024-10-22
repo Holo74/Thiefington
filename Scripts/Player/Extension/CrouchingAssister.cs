@@ -6,20 +6,19 @@ public partial class CrouchingAssister : Node
 
 	[Export]
 	private Player PlayerCharacter { get; set; }
-	[Export]
 	private float CrouchHeight { get; set; }
-	[Export]
 	private float StandingHeight { get; set; }
-	[Export]
 	private float ProneHeight { get; set; }
 	[Export]
 	private float CrouchingSpeedPerUnit { get; set; }
 	[Export]
 	private float CrouchToProneSpeed { get; set; }
 	[Export]
-	private ShapeCast3D HeadSpaceCast { get; set; }
+	private Node3D HeadNode { get; set; }
 	[Export]
 	private CollisionShape3D BodyCollision { get; set; }
+	[Export]
+	private CollisionShape3D LegsCollision { get; set; }
 
 	public Enums.EStandingType CurrentStanding { get; private set; }
 	private Enums.EStandingType AttemptingMove { get; set; }
@@ -31,20 +30,21 @@ public partial class CrouchingAssister : Node
 	private Tween CurrentRunningTween { get; set; }
 	public bool DisableCrouch { get; set; }
 
+	private int areaBit { get; set; }
+	private float HeadRestingSpace = 0.875f;
+
 	public override void _Ready()
 	{
 		base._Ready();
 		Setup(Enums.EStandingType.Standing);
-		HeadSpaceCast.ExcludeParent = true;
+		areaBit = 3;
+		StandingHeight = HeadRestingSpace;
+		CrouchHeight = StandingHeight - .5f;
+		ProneHeight = CrouchHeight - .5f;
 	}
 
 	public override void _Process(double delta)
 	{
-		if (HeadSpaceCast.IsColliding() && CurrentRunningTween?.IsRunning() == true)
-		{
-			GD.Print("Head space is colliding");
-			AttemptCancelCrouch();
-		}
 
 	}
 
@@ -52,11 +52,6 @@ public partial class CrouchingAssister : Node
 	{
 		CurrentStanding = standingType;
 		AttemptingMove = CurrentStanding;
-	}
-
-	private SeparationRayShape3D GetBodyRay(CollisionShape3D collision)
-	{
-		return collision.Shape as SeparationRayShape3D;
 	}
 
 	private Tween HeightChangeTween(Tween.TransitionType transitionType, float heightMovingTo, float speed, Tween adder = null)
@@ -70,20 +65,33 @@ public partial class CrouchingAssister : Node
 			adder.Chain();
 		}
 		speed = Math.Abs(speed);
-		adder.TweenProperty(GetBodyRay(BodyCollision), "length", heightMovingTo, speed);
+		adder.TweenProperty(HeadNode, "position:y", heightMovingTo, speed);
 		adder.SetTrans(transitionType);
 		return adder;
 	}
 
-	private bool CanCrouch()
+	private bool CanCrouch(Enums.EStandingType standingType)
 	{
 		// This should probably be the last line to check as it allows us to move up.
-		return !HeadSpaceCast.IsColliding();
+		if (standingType > CurrentStanding)
+		{
+			return true;
+		}
+		switch (CurrentStanding)
+		{
+			case Enums.EStandingType.Crouching:
+				return areaBit >= 2;
+			case Enums.EStandingType.Prone:
+				return areaBit >= 3;
+			default:
+				break;
+		}
+		return false;
 	}
 
 	private float GetCurrentHeight()
 	{
-		return GetBodyRay(BodyCollision).Length;
+		return HeadNode.Position.Y;
 	}
 
 	private float TimeToCompleteCrouch(float target, float current, float speed)
@@ -91,9 +99,15 @@ public partial class CrouchingAssister : Node
 		return (target - current) * speed;
 	}
 
+	private void JumpNode(bool up, Node3D node, float amount = .5f)
+	{
+		Vector3 jumper = Vector3.Up * amount * (up ? 1 : -1);
+		node.Position += jumper;
+	}
+
 	private async void Crouch(Enums.EStandingType wantedStandingState)
 	{
-		if (!CanCrouch())
+		if (!CanCrouch(wantedStandingState))
 		{
 			// This might be needed for other things, but not right now
 			return;
@@ -109,28 +123,59 @@ public partial class CrouchingAssister : Node
 			case Enums.EStandingType.Standing:
 				AttemptingMove = Enums.EStandingType.Crouching;
 				CurrentRunningTween = HeightChangeTween(Tween.TransitionType.Spring, CrouchHeight, TimeToCompleteCrouch(CrouchHeight, GetCurrentHeight(), CrouchingSpeedPerUnit));
+				CurrentRunningTween.StepFinished += (long step) =>
+				{
+					JumpNode(true, HeadNode);
+					JumpNode(false, PlayerCharacter);
+					LegsCollision.Disabled = true;
+				};
 				if (wantedStandingState == Enums.EStandingType.Prone)
 				{
+					// Weird black magic is going on right here where the final prone state will cause the camera to jitter a fuck ton
 					CurrentRunningTween.StepFinished += (long step) => { AttemptingMove = Enums.EStandingType.Prone; CurrentStanding = Enums.EStandingType.Crouching; };
-					HeightChangeTween(Tween.TransitionType.Expo, ProneHeight, TimeToCompleteCrouch(ProneHeight, CrouchHeight, CrouchToProneSpeed), CurrentRunningTween);
+					HeightChangeTween(Tween.TransitionType.Expo, CrouchHeight, TimeToCompleteCrouch(CrouchHeight, HeadRestingSpace, CrouchToProneSpeed), CurrentRunningTween);
+					CurrentRunningTween.Finished += () =>
+					{
+						// JumpNode(true, HeadNode);
+						JumpNode(false, PlayerCharacter);
+						BodyCollision.Disabled = true;
+					};
 				}
 				break;
 			case Enums.EStandingType.Crouching:
 				AttemptingMove = wantedStandingState;
 				if (wantedStandingState == Enums.EStandingType.Standing)
 				{
+					JumpNode(true, PlayerCharacter);
+					JumpNode(false, HeadNode);
+					LegsCollision.Disabled = false;
 					CurrentRunningTween = HeightChangeTween(Tween.TransitionType.Spring, StandingHeight, TimeToCompleteCrouch(StandingHeight, GetCurrentHeight(), CrouchingSpeedPerUnit));
 				}
 				if (wantedStandingState == Enums.EStandingType.Prone)
 				{
-					CurrentRunningTween = HeightChangeTween(Tween.TransitionType.Expo, ProneHeight, TimeToCompleteCrouch(ProneHeight, GetCurrentHeight(), CrouchToProneSpeed));
+					CurrentRunningTween = HeightChangeTween(Tween.TransitionType.Expo, CrouchHeight, TimeToCompleteCrouch(ProneHeight, GetCurrentHeight(), CrouchToProneSpeed));
+					CurrentRunningTween.Finished += () =>
+					{
+						JumpNode(false, PlayerCharacter);
+						JumpNode(true, HeadNode);
+						BodyCollision.Disabled = true;
+						GD.Print("Finished into prone");
+					};
 				}
 				break;
 			case Enums.EStandingType.Prone:
-				CurrentRunningTween = HeightChangeTween(Tween.TransitionType.Spring, CrouchHeight, TimeToCompleteCrouch(CrouchHeight, GetCurrentHeight(), CrouchToProneSpeed));
+				JumpNode(true, PlayerCharacter);
+				JumpNode(false, HeadNode);
+				CurrentRunningTween = HeightChangeTween(Tween.TransitionType.Spring, HeadRestingSpace, TimeToCompleteCrouch(HeadRestingSpace, CrouchHeight, CrouchToProneSpeed));
 				AttemptingMove = Enums.EStandingType.Crouching;
+
+				BodyCollision.Disabled = false;
 				if (wantedStandingState == Enums.EStandingType.Standing)
 				{
+					CurrentRunningTween.StepFinished += (long step) =>
+					{
+
+					};
 					CurrentRunningTween.StepFinished += (long step) => { AttemptingMove = Enums.EStandingType.Standing; CurrentStanding = Enums.EStandingType.Crouching; };
 					HeightChangeTween(Tween.TransitionType.Spring, StandingHeight, TimeToCompleteCrouch(StandingHeight, CrouchHeight, CrouchingSpeedPerUnit), CurrentRunningTween);
 				}
@@ -138,6 +183,7 @@ public partial class CrouchingAssister : Node
 			default:
 				break;
 		}
+		CurrentRunningTween.SetProcessMode(Tween.TweenProcessMode.Physics);
 		CurrentRunningTween.Finished +=
 		() =>
 		{
@@ -182,33 +228,5 @@ public partial class CrouchingAssister : Node
 	{
 		//This may work as it attempts to go to the prior crouch state.
 		Crouch(CurrentStanding);
-	}
-
-	public void AttemptCancelCrouch()
-	{
-		if (AttemptingMove == Enums.EStandingType.Standing)
-		{
-			CancelCrouch();
-			return;
-		}
-		if (AttemptingMove == Enums.EStandingType.Crouching && CurrentStanding == Enums.EStandingType.Prone)
-		{
-			CancelCrouch();
-		}
-
-	}
-
-	public void BumperHit(Node3D hitThing)
-	{
-		GD.Print("Head bumped into something");
-		if (AttemptingMove == Enums.EStandingType.Standing)
-		{
-			CancelCrouch();
-			return;
-		}
-		if (AttemptingMove == Enums.EStandingType.Crouching && CurrentStanding == Enums.EStandingType.Prone)
-		{
-			CancelCrouch();
-		}
 	}
 }

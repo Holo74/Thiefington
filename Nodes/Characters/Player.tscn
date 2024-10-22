@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3 uid="uid://p7eg0qiajtdt"]
+[gd_scene load_steps=16 format=3 uid="uid://p7eg0qiajtdt"]
 
 [ext_resource type="Script" path="res://Scripts/Player/Player.cs" id="1_ldhrt"]
 [ext_resource type="Script" path="res://Scripts/VariableGroupings/RotationAndClamp.cs" id="2_kkm7t"]
@@ -35,24 +35,21 @@ MouseRotationMult = Vector2(0.5, 0.5)
 height = 0.25
 radius = 0.25
 
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_0at3r"]
+height = 0.5
+radius = 0.25
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_qw66h"]
+height = 0.5
+radius = 0.25
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_pqavf"]
+
 [sub_resource type="SphereMesh" id="SphereMesh_tyic6"]
 radius = 0.1
 height = 0.2
 
-[sub_resource type="SeparationRayShape3D" id="SeparationRayShape3D_hvxdt"]
-length = 1.5
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_pqavf"]
-
-[sub_resource type="CylinderShape3D" id="CylinderShape3D_im7vb"]
-height = 0.1
-radius = 0.284342
-
-[sub_resource type="CylinderShape3D" id="CylinderShape3D_hat3n"]
-height = 0.1
-radius = 0.25
-
-[node name="Player Character" type="CharacterBody3D" node_paths=PackedStringArray("PlayerHead", "crouchingAssister", "MovementInstructions")]
+[node name="Player Character" type="CharacterBody3D" node_paths=PackedStringArray("PlayerHead", "crouchingAssister", "LedgeGrabber", "MovementInstructions")]
 floor_constant_speed = true
 script = ExtResource("1_ldhrt")
 PlayerHead = NodePath("Leaning Camera/Camera")
@@ -60,18 +57,17 @@ YRotation = SubResource("Resource_qjqmx")
 ZRotation = SubResource("Resource_4a3ey")
 PlayerVariables = SubResource("Resource_1l84b")
 crouchingAssister = NodePath("Crouch Assister")
+LedgeGrabber = NodePath("Hand Holding Raycasts")
 MovementInstructions = NodePath("Movement")
 
-[node name="Crouch Assister" type="Node" parent="." node_paths=PackedStringArray("PlayerCharacter", "HeadSpaceCast", "BodyCollision")]
+[node name="Crouch Assister" type="Node" parent="." node_paths=PackedStringArray("PlayerCharacter", "HeadNode", "BodyCollision", "LegsCollision")]
 script = ExtResource("4_5pjyl")
 PlayerCharacter = NodePath("..")
-CrouchHeight = 0.5
-StandingHeight = 1.5
-ProneHeight = 0.1
 CrouchingSpeedPerUnit = 0.5
 CrouchToProneSpeed = 2.0
-HeadSpaceCast = NodePath("../Head cast")
-BodyCollision = NodePath("../Body")
+HeadNode = NodePath("../Leaning Camera")
+BodyCollision = NodePath("../BodyCollision")
+LegsCollision = NodePath("../FeetCollision")
 
 [node name="Movement" type="Node" parent="." node_paths=PackedStringArray("PlayerCharacter")]
 script = ExtResource("5_hauvl")
@@ -81,12 +77,26 @@ PlayerCharacter = NodePath("..")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.875, 0)
 shape = SubResource("CylinderShape3D_yudsb")
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Head"]
-mesh = SubResource("SphereMesh_tyic6")
+[node name="BodyCollision" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+shape = SubResource("CylinderShape3D_0at3r")
 
-[node name="Body" type="CollisionShape3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0.725, 0)
-shape = SubResource("SeparationRayShape3D_hvxdt")
+[node name="FeetCollision" type="CollisionShape3D" parent="."]
+shape = SubResource("CylinderShape3D_0at3r")
+
+[node name="Crouch Collision Nodes" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.25, 0)
+
+[node name="CloseBody" type="Area3D" parent="Crouch Collision Nodes"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Crouch Collision Nodes/CloseBody"]
+shape = SubResource("CylinderShape3D_qw66h")
+
+[node name="FurtherBody" type="Area3D" parent="Crouch Collision Nodes"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Crouch Collision Nodes/FurtherBody"]
+shape = SubResource("CylinderShape3D_qw66h")
 
 [node name="Hand Holding Raycasts" type="Node3D" parent="." node_paths=PackedStringArray("LeftHold", "MiddleHold", "RightHold")]
 transform = Transform3D(-4.37113e-08, 0, -0.999999, 0, 1, 0, 0.999999, 0, -4.37113e-08, 0, 0.875, 0)
@@ -98,14 +108,17 @@ RightHold = NodePath("Right Cast")
 [node name="Right Cast" type="RayCast3D" parent="Hand Holding Raycasts"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3, 0, -0.4)
 target_position = Vector3(0, -0.5, 0)
+hit_back_faces = false
 
 [node name="Middle Cast" type="RayCast3D" parent="Hand Holding Raycasts"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.4)
 target_position = Vector3(0, -0.5, 0)
+hit_back_faces = false
 
 [node name="Left Cast" type="RayCast3D" parent="Hand Holding Raycasts"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3, 0, -0.4)
 target_position = Vector3(0, -0.5, 0)
+hit_back_faces = false
 
 [node name="Leaning Camera" type="SpringArm3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.875, 0)
@@ -113,26 +126,18 @@ shape = SubResource("BoxShape3D_pqavf")
 spring_length = 0.0
 
 [node name="Camera" type="Camera3D" parent="Leaning Camera"]
+physics_interpolation_mode = 2
 transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, 0, 0)
 current = true
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Leaning Camera/Camera"]
+mesh = SubResource("SphereMesh_tyic6")
 
 [node name="Hand Hold Loc And Rot" type="RemoteTransform3D" parent="Leaning Camera"]
 transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0, 0, 0)
 remote_path = NodePath("../../Hand Holding Raycasts")
+update_rotation = false
 update_scale = false
-
-[node name="HeadBumper" type="Area3D" parent="Leaning Camera"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.203244, 0)
-monitorable = false
-
-[node name="Bumper" type="CollisionShape3D" parent="Leaning Camera/HeadBumper"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.00228667, 0)
-shape = SubResource("CylinderShape3D_im7vb")
-
-[node name="Head cast" type="ShapeCast3D" parent="."]
-transform = Transform3D(-1, 8.74228e-08, 0, -8.74228e-08, -1, 0, 0, 0, 1, 0, 0.75, 0)
-shape = SubResource("CylinderShape3D_hat3n")
-target_position = Vector3(0, -0.3, 0)
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 process_mode = 3
@@ -177,6 +182,10 @@ placeholder_text = "Command"
 
 [node name="RichTextLabel" type="RichTextLabel" parent="CanvasLayer/PanelContainer/MarginContainer/VBoxContainer"]
 layout_mode = 2
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(-3.78552e-08, 0.5, -0.866025, 2.18557e-08, 0.866025, 0.5, 1, 0, -4.37114e-08, -3.14997, 3.04127, 0)
+fov = 37.8493
 
 [connection signal="FinishCrouchState" from="Crouch Assister" to="." method="DebugEventCaller"]
 [connection signal="FinishCrouchState" from="Crouch Assister" to="Movement" method="CrouchReceiver"]
